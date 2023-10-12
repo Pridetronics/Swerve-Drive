@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
 
 import frc.robot.SwerveModuleConstants;
@@ -19,6 +21,18 @@ import frc.robot.SwerveModuleConstants;
 public final class Constants {
   public static class OperatorConstants {
     public static final int kDriverControllerCANID = 0;
+
+  }
+
+  public static class IOConstants {
+    public static final double kDeadband = 0.01;
+    public static final int kDriveJoystickID = 1;
+
+    public static final int kDriveJoystickXAxis = 1;
+    public static final int kDriveJoystickYAxis = 2;
+    public static final int kDriveJoystickTurningAxis = 3;
+    public static final int kDriveFieldOrientedDriveBtnID = 4;
+    public static final int kZeroHeadingBtnID = 4;
   }
 
   public static class WheelConstants {
@@ -32,10 +46,30 @@ public final class Constants {
     public static final double k360DegreesToRadians = 2*Math.PI;
 
     public static final double kPTurning = 0.5;
+
+    
+    //Distance between the right and left wheels
+    public static final double kTrackWidth = Units.inchesToMeters(21);
+    //DIstance between the front and back wheels
+    public static final double kWheelBaseLength = Units.inchesToMeters(25.5);
+
+    public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(
+      new Translation2d(kWheelBaseLength/2, kTrackWidth/2),
+      new Translation2d(kWheelBaseLength/2, -kTrackWidth/2),
+      new Translation2d(-kWheelBaseLength/2, kTrackWidth/2),
+      new Translation2d(-kWheelBaseLength/2, -kTrackWidth/2)
+    );
+
   }
 
   public static class DriveConstants {
     public static final double kPhysicalMaxSpeedMetersPerSecond = 5;
+
+    public static final double kTeleMaxDriveAccelerationUnitsPerSecond = 1;
+    public static final double kTeleMaxTurningAccelerationUnitsPerSecond = 1;
+
+    public static final double kTeleMaxDriveSpeedMetersPerSecond = 3;
+    public static final double kTeleMaxTurningSpeedRadiansPerSecond = 135 * (Math.PI/180);
 
     public static final int kFrontLeftDriveMotorCANID = 8;
     public static final int kFrontLeftTurningMotorCANID = 7;

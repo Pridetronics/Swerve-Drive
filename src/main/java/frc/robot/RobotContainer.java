@@ -4,8 +4,15 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.IOConstants;
+import frc.robot.commands.SwerveJoystickCmd;
+import frc.robot.commands.ZeroRobotHeading;
+import frc.robot.subsystems.SwerveSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -15,10 +22,23 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-//  private final SwerveModule SwerveModule = new SwerveModule();
+  private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
+
+  private final Joystick driverJoystick = new Joystick(IOConstants.kDriveJoystickID);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+
+    swerveSubsystem.setDefaultCommand(
+      new SwerveJoystickCmd(
+        swerveSubsystem, 
+        () -> driverJoystick.getRawAxis(IOConstants.kDriveJoystickYAxis), 
+        () -> driverJoystick.getRawAxis(IOConstants.kDriveJoystickXAxis), 
+        () -> driverJoystick.getRawAxis(IOConstants.kDriveJoystickTurningAxis),
+        () -> !driverJoystick.getRawButton(IOConstants.kDriveFieldOrientedDriveBtnID)
+      )
+    );
+
     // Configure the trigger bindings
     configureBindings();
   }
@@ -33,6 +53,10 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
+
+    new JoystickButton(driverJoystick, IOConstants.kZeroHeadingBtnID)
+    .onTrue(new ZeroRobotHeading(swerveSubsystem));
+
   }
 
   /**
@@ -40,8 +64,8 @@ public class RobotContainer {
    *
    * @return the command to run in autonomous
    */
-//   public Command getAutonomousCommand() {
-//     // An example command will be run in autonomous
-// //    return Autos.exampleAuto(m_exampleSubsystem);
-//   }
+  public Command getAutonomousCommand() {
+    // An example command will be run in autonomous
+    return null;
+  }
 }
