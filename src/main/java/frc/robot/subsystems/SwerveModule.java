@@ -15,6 +15,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -96,9 +97,7 @@ public class SwerveModule extends SubsystemBase {
   }
 
   public double getAbsoluteEncoderRad() {
-    double angle = absoluteEncoder.getAbsolutePosition();
-
-    angle *= Math.PI / 180;
+    double angle = Units.degreesToRadians(absoluteEncoder.getAbsolutePosition());
     angle -= absoluteEncoderOffsetRad;
     return angle * (absoluteEncoderReversed ? -1 : 1);
   }
