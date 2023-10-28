@@ -8,7 +8,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
 
-import frc.robot.SwerveModuleConstants;
+
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -39,8 +39,8 @@ public final class Constants {
   
     public static final double kSwerveWheelDiameterMeters = Units.inchesToMeters(4);
 
-    public static final double kDriveMotorGearRatio = 1 / 5.8462;
-    public static final double kTurningMotorGearRatio = 1 / 18.0;
+    public static final double kDriveMotorGearRatio = 1 / 12.8;
+    public static final double kTurningMotorGearRatio = (14 / 27) * (27 / 15);
 
     public static final double kDistancePerWheelRotation = kSwerveWheelDiameterMeters*Math.PI;
     public static final double k360DegreesToRadians = 2*Math.PI;
@@ -105,6 +105,37 @@ public final class Constants {
     public static final boolean kBackRightDriveAbsoluteEncoderReversed = false;
     public static final int kBackRightDriveAbsoluteEncoderOffsetDeg = -270;
   }
+
+  public static class SwerveModuleConstants {
+      public final int kDriveMotorCANID;
+      public final int kTurningMotorCANID;
+      public final int kTurningEncoderID;
+      public final double kAbsoluteEncoderOffsetRadians;
+      public final boolean kAbsoluteEncoderReversed;
+      public final boolean kDriveEncoderReversed;
+      public final boolean kTurningEncoderReversed;
+
+      SwerveModuleConstants(
+              int driveMotorCANID, 
+              int turningMotorCANID, 
+              int CTRETurningEncoderID,
+              int absoluteEncoderOffsetDegrees,
+              boolean absoluteEncoderReversed,
+              boolean driveEncoderReversed,
+              boolean turningEncoderReversed
+          ) {
+
+          kDriveMotorCANID = driveMotorCANID;
+          kTurningMotorCANID = turningMotorCANID;
+          kTurningEncoderID = CTRETurningEncoderID;
+          kAbsoluteEncoderOffsetRadians = absoluteEncoderOffsetDegrees * (Math.PI/180);
+          kAbsoluteEncoderReversed = absoluteEncoderReversed;
+          kDriveEncoderReversed = driveEncoderReversed;
+          kTurningEncoderReversed = turningEncoderReversed;
+          
+      }
+  }
+
 
   public static class SwerveModuleClasses {
 
