@@ -1,0 +1,47 @@
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
+
+package frc.robot.commands;
+
+import java.util.List;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.Constants;
+
+public final class SwerveAutoPaths {
+  /** Example static factory for an autonomous command. */
+  // public static CommandBase exampleAuto(ExampleSubsystem subsystem) {
+  //  return Commands.sequence(subsystem.exampleMethodCommand(), new ExampleCommand(subsystem));
+  // }
+
+  public static Trajectory TestAutoPath(SwerveSubsystem swerveSubsystem) {
+    Trajectory trajectory1 = TrajectoryGenerator.generateTrajectory(
+      new Pose2d(0, 0, new Rotation2d(0)), 
+      List.of(
+        new Translation2d(1, 0),
+        new Translation2d(1, 1),
+        new Translation2d(2, -2),
+        new Translation2d(1, -3),
+        new Translation2d(0, 0)
+      ),
+      new Pose2d(0, 0, new Rotation2d(360)), 
+      Constants.kTrajectoryConfig);
+
+    return trajectory1;
+  }
+
+  private SwerveAutoPaths() {
+    throw new UnsupportedOperationException("This is a utility class!");
+  }
+}

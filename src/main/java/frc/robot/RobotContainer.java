@@ -4,12 +4,16 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.IOConstants;
+import frc.robot.commands.SwerveAutoPaths;
 import frc.robot.commands.SwerveJoystickCmd;
 import frc.robot.commands.ZeroRobotHeading;
 import frc.robot.subsystems.SwerveSubsystem;
@@ -23,11 +27,16 @@ import frc.robot.subsystems.SwerveSubsystem;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
-
+  private final SendableChooser<Trajectory> autoCommandChooser = new SendableChooser<>();
   private final Joystick driverJoystick = new Joystick(IOConstants.kDriveJoystickID);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+
+    autoCommandChooser.setDefaultOption("Do Nothing", null);
+    autoCommandChooser.addOption("test auto", SwerveAutoPaths.TestAutoPath(swerveSubsystem));
+
+    SmartDashboard.putData("Autonomous Mode", autoCommandChooser);
 
     swerveSubsystem.setDefaultCommand(
       new SwerveJoystickCmd(
@@ -65,7 +74,10 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // An example command will be run in autonomous
+    Trajectory chosenTrajectory = autoCommandChooser.getSelected();
+
+    if (chosenTrajectory == null) return null;
+
     return null;
   }
 }

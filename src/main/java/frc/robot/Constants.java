@@ -6,6 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.util.Units;
 
 
@@ -32,7 +33,7 @@ public final class Constants {
     public static final int kDriveJoystickYAxis = 2;
     public static final int kDriveJoystickTurningAxis = 3;
     public static final int kDriveFieldOrientedDriveBtnID = 4;
-    public static final int kZeroHeadingBtnID = 4;
+    public static final int kZeroHeadingBtnID = 2;
   }
 
   public static class WheelConstants {
@@ -49,9 +50,9 @@ public final class Constants {
 
     
     //Distance between the right and left wheels
-    public static final double kTrackWidth = Units.inchesToMeters(21);
+    public static final double kTrackWidth = Units.inchesToMeters(22.5);
     //DIstance between the front and back wheels
-    public static final double kWheelBaseLength = Units.inchesToMeters(25.5);
+    public static final double kWheelBaseLength = Units.inchesToMeters(22.5);
 
     public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(
       new Translation2d(kWheelBaseLength/2, kTrackWidth/2),
@@ -105,6 +106,16 @@ public final class Constants {
     public static final boolean kBackRightDriveAbsoluteEncoderReversed = false;
     public static final int kBackRightDriveAbsoluteEncoderOffsetDeg = -270;
   }
+
+  public static class AutoConstants {
+    public static final double kMaxSpeedMetersPerSecond = 3;
+    public static final double kMaxAccelerationMetersPerSecond = 1;
+  }
+
+  public static final TrajectoryConfig kTrajectoryConfig = new TrajectoryConfig(
+    AutoConstants.kMaxSpeedMetersPerSecond,
+    AutoConstants.kMaxAccelerationMetersPerSecond
+  ).setKinematics(WheelConstants.kDriveKinematics);
 
   public static class SwerveModuleConstants {
       public final int kDriveMotorCANID;
