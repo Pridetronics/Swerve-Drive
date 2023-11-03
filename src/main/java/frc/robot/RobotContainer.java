@@ -4,15 +4,22 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
+import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.AutoConstants;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.IOConstants;
+import frc.robot.Constants.WheelConstants;
 import frc.robot.commands.SwerveAutoPaths;
 import frc.robot.commands.SwerveJoystickCmd;
 import frc.robot.commands.ZeroRobotHeading;
@@ -78,6 +85,21 @@ public class RobotContainer {
 
     if (chosenTrajectory == null) return null;
 
-    return null;
+    PIDController xController = new PIDController(AutoConstants.kPXController, 0, 0);
+    PIDController yController = new PIDController(AutoConstants.kPYController, 0, 0);
+    ProfiledPIDController thetaController = new ProfiledPIDController(AutoConstants.kPThetaController, 0, 0, AutoConstants.kThetaControllerConstraints);
+    thetaController.enableContinuousInput(-Math.PI, Math.PI);
+
+    SwerveControllerCommand swerveAutoCommand = new SwerveControllerCommand(
+    chosenTrajectory, 
+    swerveSubsystem::getPose, 
+    WheelConstants.kDriveKinematics,
+    xController,
+    yController,
+    thetaController,
+    swerveSubsystem::setModuleStates,
+    swerveSubsystem);
+
+    return swerveAutoCommand;
   }
 }

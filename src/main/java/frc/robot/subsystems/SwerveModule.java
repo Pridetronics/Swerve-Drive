@@ -14,6 +14,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.AnalogInput;
@@ -78,6 +79,11 @@ public class SwerveModule extends SubsystemBase {
     
     absoluteEncoder.configFactoryDefault();
     absoluteEncoder.configAllSettings(absoluteEncoderConfig);
+
+  }
+
+  public SwerveModulePosition getSwervePosition() {
+    return new SwerveModulePosition(getDrivePosition(), new Rotation2d( getTurningPosition() ));
   }
 
   public double getDrivePosition() {

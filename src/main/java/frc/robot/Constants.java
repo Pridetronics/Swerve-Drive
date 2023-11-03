@@ -7,6 +7,8 @@ package frc.robot;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
 
 
@@ -55,10 +57,10 @@ public final class Constants {
     public static final double kWheelBaseLength = Units.inchesToMeters(22.5);
 
     public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(
-      new Translation2d(kWheelBaseLength/2, kTrackWidth/2),
-      new Translation2d(kWheelBaseLength/2, -kTrackWidth/2),
-      new Translation2d(-kWheelBaseLength/2, kTrackWidth/2),
-      new Translation2d(-kWheelBaseLength/2, -kTrackWidth/2)
+      new Translation2d(kWheelBaseLength/2, kTrackWidth/2), //Front Left
+      new Translation2d(kWheelBaseLength/2, -kTrackWidth/2), //Front Right
+      new Translation2d(-kWheelBaseLength/2, kTrackWidth/2), //Back Left
+      new Translation2d(-kWheelBaseLength/2, -kTrackWidth/2) //Beck Right
     );
 
   }
@@ -110,6 +112,17 @@ public final class Constants {
   public static class AutoConstants {
     public static final double kMaxSpeedMetersPerSecond = 3;
     public static final double kMaxAccelerationMetersPerSecond = 1;
+
+    public static final double kMaxTurningSpeedRadiansPerSecond = 30 * (Math.PI / 180);
+    public static final double kMaxTurningAccelerationRadiansPerSecond = 15 * (Math.PI / 180);
+
+    public static final double kPXController = 0.01;
+    public static final double kPYController = 0.01;
+    public static final double kPThetaController = 0.01;
+    public static final TrapezoidProfile.Constraints kThetaControllerConstraints = //
+    new TrapezoidProfile.Constraints(
+      kMaxTurningSpeedRadiansPerSecond,
+      kMaxTurningAccelerationRadiansPerSecond);
   }
 
   public static final TrajectoryConfig kTrajectoryConfig = new TrajectoryConfig(
