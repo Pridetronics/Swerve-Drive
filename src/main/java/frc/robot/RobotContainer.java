@@ -43,7 +43,8 @@ public class RobotContainer {
   public RobotContainer() {
 
     autoCommandChooser.setDefaultOption("Do Nothing", null);
-    autoCommandChooser.addOption("test auto", SwerveAutoPaths.TestAutoPath(swerveSubsystem));
+    autoCommandChooser.addOption("test auto", SwerveAutoPaths.TestAutoPath());
+    autoCommandChooser.addOption("weird path", SwerveAutoPaths.WeirdPath());
 
     SmartDashboard.putData("Autonomous Mode", autoCommandChooser);
 
