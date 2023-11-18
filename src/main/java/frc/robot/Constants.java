@@ -42,7 +42,7 @@ public final class Constants {
   
     public static final double kSwerveWheelDiameterMeters = Units.inchesToMeters(4);
 
-    public static final double kDriveMotorGearRatio = 1/6.54;
+    public static final double kDriveMotorGearRatio = (14/50) * (27/17) * (15/45);
     public static final double kTurningMotorGearRatio = 1 / 12.8;
 
     public static final double kDistancePerWheelRotation = kSwerveWheelDiameterMeters*Math.PI;
