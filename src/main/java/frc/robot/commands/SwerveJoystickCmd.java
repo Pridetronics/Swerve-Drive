@@ -6,7 +6,10 @@ package frc.robot.commands;
 
 import java.util.function.Supplier;
 
+import com.revrobotics.AbsoluteEncoder;
+
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -52,9 +55,13 @@ private final SlewRateLimiter xLimiter, yLimiter, turningLimiter;
   @Override
   public void execute() {
 
-    double xSpeed = xSpdFunction.get();
-    double ySpeed = ySpdFunction.get();
+    double xSpeed = -xSpdFunction.get();
+    double ySpeed = -ySpdFunction.get();
     double turningSpeed = turningSpdFunction.get();
+    SmartDashboard.putNumber("xSpeed", xSpeed);
+    SmartDashboard.putNumber("ySpeed", ySpeed);
+    SmartDashboard.putNumber("turnSpeed", turningSpeed);
+
 
     xSpeed = Math.abs(xSpeed) > IOConstants.kDeadband ? xSpeed : 0.0;
     ySpeed = Math.abs(ySpeed) > IOConstants.kDeadband ? ySpeed : 0.0;

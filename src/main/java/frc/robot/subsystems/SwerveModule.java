@@ -4,13 +4,16 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.CANCoderConfiguration;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
+import com.revrobotics.SparkMaxRelativeEncoder;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.SparkMaxRelativeEncoder.Type;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -54,8 +57,8 @@ public class SwerveModule extends SubsystemBase {
     absoluteEncoder = new CANCoder(swerveModuleConstants.kTurningEncoderID);
     configAbsoluteEncoder();
 
-    driveEncoder = driveMotor.getEncoder();
-    turningEncoder = turningMotor.getEncoder();
+    driveEncoder = driveMotor.getEncoder(SparkMaxRelativeEncoder.Type.kHallSensor, 42);
+    turningEncoder = turningMotor.getEncoder(SparkMaxRelativeEncoder.Type.kHallSensor, 42);
 
     turningPidController = turningMotor.getPIDController();
     turningPidController.setP(WheelConstants.kPTurning);
@@ -65,11 +68,11 @@ public class SwerveModule extends SubsystemBase {
     turningPidController.setPositionPIDWrappingMaxInput(Math.PI);
     turningPidController.setPositionPIDWrappingMinInput(-Math.PI);
 
-    driveEncoder.setPositionConversionFactor(WheelConstants.kDistancePerWheelRotation);
-    driveEncoder.setVelocityConversionFactor(WheelConstants.kDistancePerWheelRotation);
+    driveEncoder.setPositionConversionFactor(WheelConstants.kDistancePerWheelRotation*WheelConstants.kDriveMotorGearRatio);
+    driveEncoder.setVelocityConversionFactor(WheelConstants.kDistancePerWheelRotation*WheelConstants.kDriveMotorGearRatio);
 
-    turningEncoder.setPositionConversionFactor(WheelConstants.k360DegreesToRadians);
-    turningEncoder.setVelocityConversionFactor(WheelConstants.k360DegreesToRadians);
+    turningEncoder.setPositionConversionFactor(WheelConstants.k360DegreesToRadians*WheelConstants.kTurningMotorGearRatio);
+    turningEncoder.setVelocityConversionFactor(WheelConstants.k360DegreesToRadians*WheelConstants.kTurningMotorGearRatio);
 
     resetEncoders();
   }
@@ -78,6 +81,9 @@ public class SwerveModule extends SubsystemBase {
     CANCoderConfiguration absoluteEncoderConfig = new CANCoderConfiguration();
     
     absoluteEncoder.configFactoryDefault();
+
+    absoluteEncoderConfig.sensorDirection = true;
+    absoluteEncoderConfig.absoluteSensorRange = AbsoluteSensorRange.Unsigned_0_to_360;
     absoluteEncoder.configAllSettings(absoluteEncoderConfig);
 
   }
@@ -91,11 +97,11 @@ public class SwerveModule extends SubsystemBase {
   }
 
   public double getTurningPosition() {
-    return driveEncoder.getVelocity();
+    return turningEncoder.getPosition() % (2*Math.PI);
   }
 
   public double getDriveVelocity() {
-    return turningEncoder.getPosition();
+    return driveEncoder.getVelocity();
   }
 
   public double getTurningVelocity() {
@@ -103,8 +109,12 @@ public class SwerveModule extends SubsystemBase {
   }
 
   public double getAbsoluteEncoderRad() {
-    double angle = Units.degreesToRadians(absoluteEncoder.getAbsolutePosition());
+    double absoluteAngle = absoluteEncoder.getAbsolutePosition();
+
+    double angle = Units.degreesToRadians(absoluteAngle);
+
     angle -= absoluteEncoderOffsetRad;
+
     return angle * (absoluteEncoderReversed ? -1 : 1);
   }
 
@@ -114,12 +124,12 @@ public class SwerveModule extends SubsystemBase {
   }
 
   public SwerveModuleState getState() {
-    return new SwerveModuleState( getDriveVelocity(), new Rotation2d( getTurningPosition() ) );
+    return new SwerveModuleState( getDriveVelocity(), new Rotation2d( getTurningPosition() ));
   }
 
   public void setDesiredState(SwerveModuleState state) {
 
-    if (Math.abs(state.speedMetersPerSecond) < 0.001) {
+    if (Math.abs(state.speedMetersPerSecond) < 0.01) {
       stop();
       return;
     }
@@ -127,6 +137,7 @@ public class SwerveModule extends SubsystemBase {
     SwerveModuleState.optimize(state, getState().angle);
     driveMotor.set(state.speedMetersPerSecond / DriveConstants.kPhysicalMaxSpeedMetersPerSecond);
     turningPidController.setReference(state.angle.getRadians(), ControlType.kPosition);
+
     SmartDashboard.putString("Swerve Module[" + absoluteEncoder.getDeviceID() + "] state", state.toString());
   }
 
