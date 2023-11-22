@@ -88,6 +88,16 @@ public class SwerveSubsystem extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
 
+    SmartDashboard.putNumber("Module [9] Absolute", frontLeft.getAbsoluteEncoderRad());
+    SmartDashboard.putNumber("Module [10] Absolute", frontRight.getAbsoluteEncoderRad());
+    SmartDashboard.putNumber("Module [11] Absolute", backRight.getAbsoluteEncoderRad());
+    SmartDashboard.putNumber("Module [12] Absolute", backLeft.getAbsoluteEncoderRad());
+
+    SmartDashboard.putNumber("Module [9] Relative", frontLeft.getTurningPosition());
+    SmartDashboard.putNumber("Module [10] Relative", frontRight.getTurningPosition());
+    SmartDashboard.putNumber("Module [11] Relative", backRight.getTurningPosition());
+    SmartDashboard.putNumber("Module [12] Relative", backLeft.getTurningPosition());
+
     odometer.update(getRotation2d(), new SwerveModulePosition[] {
       frontLeft.getSwervePosition(),
       frontRight.getSwervePosition(),
