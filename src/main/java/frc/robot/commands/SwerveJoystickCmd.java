@@ -55,8 +55,8 @@ private final SlewRateLimiter xLimiter, yLimiter, turningLimiter;
   @Override
   public void execute() {
 
-    double xSpeed = -xSpdFunction.get();
-    double ySpeed = -ySpdFunction.get();
+    double xSpeed = xSpdFunction.get();
+    double ySpeed = ySpdFunction.get();
     double turningSpeed = turningSpdFunction.get();
     SmartDashboard.putNumber("xSpeed", xSpeed);
     SmartDashboard.putNumber("ySpeed", ySpeed);

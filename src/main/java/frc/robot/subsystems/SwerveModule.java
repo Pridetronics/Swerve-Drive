@@ -37,7 +37,7 @@ public class SwerveModule extends SubsystemBase {
   private final RelativeEncoder driveEncoder;
   private final RelativeEncoder turningEncoder;
 
-  private final SparkMaxPIDController turningPidController;
+  private final PIDController turningPidController;
 
   private final CANCoder absoluteEncoder;
   private final boolean absoluteEncoderReversed;
@@ -60,13 +60,11 @@ public class SwerveModule extends SubsystemBase {
     driveEncoder = driveMotor.getEncoder(SparkMaxRelativeEncoder.Type.kHallSensor, 42);
     turningEncoder = turningMotor.getEncoder(SparkMaxRelativeEncoder.Type.kHallSensor, 42);
 
-    turningPidController = turningMotor.getPIDController();
-    turningPidController.setP(WheelConstants.kPTurning);
-    turningPidController.setI(0);
-    turningPidController.setD(0);
-    turningPidController.setPositionPIDWrappingEnabled(true);
-    turningPidController.setPositionPIDWrappingMaxInput(Math.PI);
-    turningPidController.setPositionPIDWrappingMinInput(-Math.PI);
+    turningPidController = new PIDController(WheelConstants.kPTurning, 0, 0);
+    // turningPidController.setP(WheelConstants.kPTurning);
+    // turningPidController.setI(0);
+    // turningPidController.setD(0);
+    turningPidController.enableContinuousInput(-Math.PI, Math.PI);
 
     driveEncoder.setPositionConversionFactor(WheelConstants.kDistancePerWheelRotation*WheelConstants.kDriveMotorGearRatio);
     driveEncoder.setVelocityConversionFactor(WheelConstants.kDistancePerWheelRotation*WheelConstants.kDriveMotorGearRatio);
@@ -97,7 +95,7 @@ public class SwerveModule extends SubsystemBase {
   }
 
   public double getTurningPosition() {
-    return turningEncoder.getPosition() % (2*Math.PI);
+    return turningEncoder.getPosition();
   }
 
   public double getDriveVelocity() {
@@ -111,15 +109,18 @@ public class SwerveModule extends SubsystemBase {
   public double getAbsoluteEncoderRad() {
     double absoluteAngle = absoluteEncoder.getAbsolutePosition();
 
+    absoluteAngle = absoluteEncoderReversed ? 360-absoluteAngle : absoluteAngle;
+
     double angle = Units.degreesToRadians(absoluteAngle);
 
     angle -= absoluteEncoderOffsetRad;
 
-    return angle * (absoluteEncoderReversed ? -1 : 1);
+    return angle;
   }
 
   public void resetEncoders() {
     driveEncoder.setPosition(0);
+    SmartDashboard.putNumber(absoluteEncoder.getDeviceID()+" Absolute", getAbsoluteEncoderRad()*(180/Math.PI));
     turningEncoder.setPosition(getAbsoluteEncoderRad());
   }
 
@@ -128,6 +129,7 @@ public class SwerveModule extends SubsystemBase {
   }
 
   public void setDesiredState(SwerveModuleState state) {
+    SmartDashboard.putString("Swerve Module[" + absoluteEncoder.getDeviceID() + "] state", state.toString());
 
     if (Math.abs(state.speedMetersPerSecond) < 0.01) {
       stop();
@@ -135,15 +137,20 @@ public class SwerveModule extends SubsystemBase {
     }
 
     state = SwerveModuleState.optimize(state, getState().angle);
-    driveMotor.set(state.speedMetersPerSecond / DriveConstants.kPhysicalMaxSpeedMetersPerSecond);
-    turningPidController.setReference(state.angle.getRadians(), ControlType.kPosition);
+    //driveMotor.set(state.speedMetersPerSecond / DriveConstants.kPhysicalMaxSpeedMetersPerSecond);
+    driveMotor.set(0);
 
-    SmartDashboard.putString("Swerve Module[" + absoluteEncoder.getDeviceID() + "] state", state.toString());
+    //turningPidController.setReference(state.angle.getRadians(), ControlType.kPosition);
+    turningMotor.set(turningPidController.calculate(turningEncoder.getPosition(), state.angle.getRadians()));
+
+    SmartDashboard.putNumber(absoluteEncoder.getDeviceID()+" Absolute", getAbsoluteEncoderRad()*(180/Math.PI));
+
   }
 
   public void stop() {
     driveMotor.set(0);
-    turningPidController.setReference(turningEncoder.getPosition(), ControlType.kPosition);
+    //turningPidController.setReference(turningEncoder.getPosition(), ControlType.kPosition);
+    turningMotor.set(0);
   }
 }
  
