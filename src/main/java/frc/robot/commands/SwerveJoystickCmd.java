@@ -73,13 +73,11 @@ private final SlewRateLimiter xLimiter, yLimiter, turningLimiter;
 
     SmartDashboard.putBoolean("Field Oriented Drive", fieldOrientedFunction.get());
 
-    ChassisSpeeds chassisSpeeds;
+    ChassisSpeeds chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, turningSpeed);
     if (fieldOrientedFunction.get()) {
       //Relative to field
-      chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, turningSpeed, swerveSubsystem.getRotation2d());
-    } else {
-      //Relative to robot
-      chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, turningSpeed);
+      chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds, swerveSubsystem.getRotation2d());
+      SmartDashboard.putString("Turning Axis proccessed", chassisSpeeds.toString());
     }
 
     SwerveModuleState[] moduleStates = WheelConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);

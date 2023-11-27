@@ -53,7 +53,7 @@ public class RobotContainer {
       new SwerveJoystickCmd(
         swerveSubsystem, 
         () -> -driverJoystick.getRawAxis(IOConstants.kDriveJoystickXAxis), 
-        () -> -driverJoystick.getRawAxis(IOConstants.kDriveJoystickYAxis), 
+        () -> driverJoystick.getRawAxis(IOConstants.kDriveJoystickYAxis), 
         () -> driverJoystick.getRawAxis(IOConstants.kDriveJoystickTurningAxis),
         () -> !driverJoystick.getRawButton(IOConstants.kDriveFieldOrientedDriveBtnID)
       )

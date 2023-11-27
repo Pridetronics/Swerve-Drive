@@ -20,10 +20,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.AnalogInput;
-import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.SwerveModuleConstants;
@@ -60,12 +56,12 @@ public class SwerveModule extends SubsystemBase {
     driveEncoder = driveMotor.getEncoder(SparkMaxRelativeEncoder.Type.kHallSensor, 42);
     turningEncoder = turningMotor.getEncoder(SparkMaxRelativeEncoder.Type.kHallSensor, 42);
 
-    turningPidController = turningEncoder.getPIDController();
+    turningPidController = turningMotor.getPIDController();
     turningPidController.setP(WheelConstants.kPTurning);
     turningPidController.setI(0);
     turningPidController.setD(0);
-    turningPidController.setPositionPIDWrappingEnabled​(true);
-    turningPidController.setPositionPIDWrappingMaxInput​(Math.PI);
+    turningPidController.setPositionPIDWrappingEnabled(true);
+    turningPidController.setPositionPIDWrappingMaxInput(Math.PI);
     turningPidController.setPositionPIDWrappingMinInput(-Math.PI);
 
     driveEncoder.setPositionConversionFactor(WheelConstants.kDistancePerWheelRotation*WheelConstants.kDriveMotorGearRatio);
@@ -129,18 +125,15 @@ public class SwerveModule extends SubsystemBase {
     return new SwerveModuleState( getDriveVelocity(), new Rotation2d( getTurningPosition() ));
   }
 
-  public void setDesiredState(SwerveModuleState state) {
-    SmartDashboard.putString("Swerve Module[" + absoluteEncoder.getDeviceID() + "] state", state.toString());
-    SmartDashboard.putNumber(absoluteEncoder.getDeviceID()+" Absolute", getAbsoluteEncoderRad()*(180/Math.PI));
-    
+  public void setDesiredState(SwerveModuleState state) {    
     if (Math.abs(state.speedMetersPerSecond) < 0.01) {
       stop();
       return;
     }
 
     state = SwerveModuleState.optimize(state, getState().angle);
-    //driveMotor.set(state.speedMetersPerSecond / DriveConstants.kPhysicalMaxSpeedMetersPerSecond);
-    driveMotor.set(0);
+    driveMotor.set(state.speedMetersPerSecond / DriveConstants.kPhysicalMaxSpeedMetersPerSecond);
+    //driveMotor.set(0);
 
     turningPidController.setReference(state.angle.getRadians(), ControlType.kPosition);
     //turningMotor.set(turningPidController.calculate(turningEncoder.getPosition(), state.angle.getRadians()));

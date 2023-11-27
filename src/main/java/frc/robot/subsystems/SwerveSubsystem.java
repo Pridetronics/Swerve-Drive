@@ -88,15 +88,15 @@ public class SwerveSubsystem extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
 
-    SmartDashboard.putNumber("Module [9] Absolute", frontLeft.getAbsoluteEncoderRad());
-    SmartDashboard.putNumber("Module [10] Absolute", frontRight.getAbsoluteEncoderRad());
-    SmartDashboard.putNumber("Module [11] Absolute", backRight.getAbsoluteEncoderRad());
-    SmartDashboard.putNumber("Module [12] Absolute", backLeft.getAbsoluteEncoderRad());
+    // SmartDashboard.putNumber("Module [9] Absolute", frontLeft.getAbsoluteEncoderRad() *(180/Math.PI) );
+    // SmartDashboard.putNumber("Module [10] Absolute", frontRight.getAbsoluteEncoderRad() *(180/Math.PI) );
+    // SmartDashboard.putNumber("Module [11] Absolute", backRight.getAbsoluteEncoderRad() *(180/Math.PI) );
+    // SmartDashboard.putNumber("Module [12] Absolute", backLeft.getAbsoluteEncoderRad() *(180/Math.PI) );
 
-    SmartDashboard.putNumber("Module [9] Relative", frontLeft.getTurningPosition());
-    SmartDashboard.putNumber("Module [10] Relative", frontRight.getTurningPosition());
-    SmartDashboard.putNumber("Module [11] Relative", backRight.getTurningPosition());
-    SmartDashboard.putNumber("Module [12] Relative", backLeft.getTurningPosition());
+    // SmartDashboard.putNumber("Module [9] Relative", frontLeft.getTurningPosition() *(180/Math.PI) );
+    // SmartDashboard.putNumber("Module [10] Relative", frontRight.getTurningPosition() *(180/Math.PI) );
+    // SmartDashboard.putNumber("Module [11] Relative", backRight.getTurningPosition() *(180/Math.PI) );
+    // SmartDashboard.putNumber("Module [12] Relative", backLeft.getTurningPosition() *(180/Math.PI) );
 
     odometer.update(getRotation2d(), new SwerveModulePosition[] {
       frontLeft.getSwervePosition(),
@@ -117,9 +117,9 @@ public class SwerveSubsystem extends SubsystemBase {
 
   public void setModuleStates(SwerveModuleState[] desiredStates) {
     SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, DriveConstants.kPhysicalMaxSpeedMetersPerSecond);
-    frontLeft.setDesiredState(desiredStates[0]);
-    frontRight.setDesiredState(desiredStates[1]);
-    backLeft.setDesiredState(desiredStates[2]);
-    backRight.setDesiredState(desiredStates[3]);
+    frontLeft.setDesiredState(desiredStates[1]);
+    frontRight.setDesiredState(desiredStates[0]);
+    backLeft.setDesiredState(desiredStates[3]);
+    backRight.setDesiredState(desiredStates[2]);
   }
 }
