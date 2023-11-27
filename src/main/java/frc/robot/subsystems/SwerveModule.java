@@ -64,7 +64,7 @@ public class SwerveModule extends SubsystemBase {
     turningPidController.setP(WheelConstants.kPTurning);
     turningPidController.setI(0);
     turningPidController.setD(0);
-    turningPidCOntroller.setPositionPIDWrappingEnabled​(true);
+    turningPidController.setPositionPIDWrappingEnabled​(true);
     turningPidController.setPositionPIDWrappingMaxInput​(Math.PI);
     turningPidController.setPositionPIDWrappingMinInput(-Math.PI);
 
