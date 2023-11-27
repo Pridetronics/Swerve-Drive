@@ -144,9 +144,6 @@ public class SwerveModule extends SubsystemBase {
 
     turningPidController.setReference(state.angle.getRadians(), ControlType.kPosition);
     //turningMotor.set(turningPidController.calculate(turningEncoder.getPosition(), state.angle.getRadians()));
-
-    SmartDashboard.putNumber(absoluteEncoder.getDeviceID()+" Absolute", getAbsoluteEncoderRad()*(180/Math.PI));
-
   }
 
   public void stop() {
