@@ -57,10 +57,10 @@ public final class Constants {
     public static final double kWheelBaseLength = Units.inchesToMeters(22.5);
 
     public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(
-      new Translation2d(kWheelBaseLength/2, kTrackWidth/2), //Front Left
-      new Translation2d(kWheelBaseLength/2, -kTrackWidth/2), //Front Right
-      new Translation2d(-kWheelBaseLength/2, kTrackWidth/2), //Back Left
-      new Translation2d(-kWheelBaseLength/2, -kTrackWidth/2) //Beck Right
+      new Translation2d(kWheelBaseLength/2, -kTrackWidth/2), //Front Left
+      new Translation2d(kWheelBaseLength/2, kTrackWidth/2), //Front Right
+      new Translation2d(-kWheelBaseLength/2, -kTrackWidth/2), //Back Left
+      new Translation2d(-kWheelBaseLength/2, kTrackWidth/2) //Beck Right
     );
 
   }
