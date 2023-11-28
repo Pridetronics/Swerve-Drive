@@ -28,7 +28,7 @@ public final class Constants {
   }
 
   public static class IOConstants {
-    public static final double kDeadband = 0.05;
+    public static final double kDeadband = 0.1;
     public static final int kDriveJoystickID = 0;
 
     public static final int kDriveJoystickXAxis = 1;
@@ -36,6 +36,7 @@ public final class Constants {
     public static final int kDriveJoystickTurningAxis = 4;
     public static final int kDriveFieldOrientedDriveBtnID = 4;
     public static final int kZeroHeadingBtnID = 2;
+    public static final double kZeroHeadingDebounceTime = 2;
   }
 
   public static class WheelConstants {
@@ -48,7 +49,7 @@ public final class Constants {
     public static final double kDistancePerWheelRotation = kSwerveWheelDiameterMeters*Math.PI;
     public static final double k360DegreesToRadians = 2*Math.PI;
 
-    public static final double kPTurning = 0.1;
+    public static final double kPTurning = 0.8;
 
     
     //Distance between the right and left wheels
