@@ -72,8 +72,8 @@ public final class Constants {
     public static final double kTeleMaxDriveAccelerationUnitsPerSecond = 3;
     public static final double kTeleMaxTurningAccelerationUnitsPerSecond = 3;
 
-    public static final double kTeleMaxDriveSpeedMetersPerSecond = 3;
-    public static final double kTeleMaxTurningSpeedRadiansPerSecond = 360 * (Math.PI/180);
+    public static final double kTeleMaxDriveSpeedMetersPerSecond = 2.25;
+    public static final double kTeleMaxTurningSpeedRadiansPerSecond = 270 * (Math.PI/180);
 
     public static final int kFrontLeftDriveMotorCANID = 2;
     public static final int kFrontLeftTurningMotorCANID = 1;
