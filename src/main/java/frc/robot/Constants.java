@@ -43,7 +43,7 @@ public final class Constants {
   
     public static final double kSwerveWheelDiameterMeters = Units.inchesToMeters(4);
 
-    public static final double kDriveMotorGearRatio = (14/50) * (27/17) * (15/45);
+    public static final double kDriveMotorGearRatio = (14.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0);
     public static final double kTurningMotorGearRatio = 1 / 12.8;
 
     public static final double kDistancePerWheelRotation = kSwerveWheelDiameterMeters*Math.PI;
@@ -111,15 +111,15 @@ public final class Constants {
   }
 
   public static class AutoConstants {
-    public static final double kMaxSpeedMetersPerSecond = 3;
-    public static final double kMaxAccelerationMetersPerSecond = 1;
+    public static final double kMaxSpeedMetersPerSecond = 1.5;
+    public static final double kMaxAccelerationMetersPerSecond = 3;
 
     public static final double kMaxTurningSpeedRadiansPerSecond = 30 * (Math.PI / 180);
-    public static final double kMaxTurningAccelerationRadiansPerSecond = 15 * (Math.PI / 180);
+    public static final double kMaxTurningAccelerationRadiansPerSec60ond = 180 * (Math.PI / 180);
 
-    public static final double kPXController = 0.01;
-    public static final double kPYController = 0.01;
-    public static final double kPThetaController = 0.01;
+    public static final double kPXController = 1.5;
+    public static final double kPYController = 1.5;
+    public static final double kPThetaController = 3;
     public static final TrapezoidProfile.Constraints kThetaControllerConstraints = //
     new TrapezoidProfile.Constraints(
       kMaxTurningSpeedRadiansPerSecond,

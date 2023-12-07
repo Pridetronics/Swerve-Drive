@@ -20,6 +20,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.SwerveModuleConstants;
@@ -63,7 +64,7 @@ public class SwerveModule extends SubsystemBase {
     turningPidController.setPositionPIDWrappingEnabled(true);
     turningPidController.setPositionPIDWrappingMaxInput(Math.PI);
     turningPidController.setPositionPIDWrappingMinInput(-Math.PI);
-
+    SmartDashboard.putNumber("Ration" + absoluteEncoder.getDeviceID(), WheelConstants.kDriveMotorGearRatio);
     driveEncoder.setPositionConversionFactor(WheelConstants.kDistancePerWheelRotation*WheelConstants.kDriveMotorGearRatio);
     driveEncoder.setVelocityConversionFactor((WheelConstants.kDistancePerWheelRotation*WheelConstants.kDriveMotorGearRatio) / 60);
 
@@ -126,6 +127,7 @@ public class SwerveModule extends SubsystemBase {
   }
 
   public void setDesiredState(SwerveModuleState state) {    
+    SmartDashboard.putString("Module [" + absoluteEncoder.getDeviceID() + "] state", state.toString());
     if (Math.abs(state.speedMetersPerSecond) < 0.01) {
       stop();
       return;

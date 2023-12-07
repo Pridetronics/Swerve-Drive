@@ -25,33 +25,49 @@ public final class SwerveAutoPaths {
   //  return Commands.sequence(subsystem.exampleMethodCommand(), new ExampleCommand(subsystem));
   // }
 
-  public static Trajectory TestAutoPath() {
+  //public static Trajectory TestAutoPath() {
+  //   Trajectory trajectory1 = TrajectoryGenerator.generateTrajectory(
+  //     new Pose2d(0, 0, new Rotation2d(0)), 
+  //     List.of(
+  //       new Translation2d(1, 0),
+  //       new Translation2d(1, 1),
+  //       new Translation2d(2, -2),
+  //       new Translation2d(1, -3),
+  //       new Translation2d(0, 0)
+  //     ),
+  //     new Pose2d(0, 0, new Rotation2d(1080)), 
+  //     Constants.kTrajectoryConfig);
+
+  //   return trajectory1;
+  // }
+
+  // public static Trajectory WeirdPath() {
+  //   Trajectory trajectory1 = TrajectoryGenerator.generateTrajectory(
+  //     new Pose2d(0, 0, new Rotation2d(0)), 
+  //     List.of(
+  //       new Translation2d(2, 0),
+  //       new Translation2d(1, -2),
+  //       new Translation2d(1, 2),
+  //       new Translation2d(0, -2),
+  //       new Translation2d(0, 0)
+  //     ),
+  //     new Pose2d(0, 0, new Rotation2d(1080)), 
+  //     Constants.kTrajectoryConfig);
+
+  //   return trajectory1;
+  // }
+
+  public static Trajectory ForwardRight() {
     Trajectory trajectory1 = TrajectoryGenerator.generateTrajectory(
       new Pose2d(0, 0, new Rotation2d(0)), 
       List.of(
         new Translation2d(1, 0),
         new Translation2d(1, 1),
-        new Translation2d(2, -2),
-        new Translation2d(1, -3),
-        new Translation2d(0, 0)
+        new Translation2d(1, -1),
+        new Translation2d(0, -1),
+        new Translation2d(0, 1)
       ),
-      new Pose2d(0, 0, new Rotation2d(1080)), 
-      Constants.kTrajectoryConfig);
-
-    return trajectory1;
-  }
-
-  public static Trajectory WeirdPath() {
-    Trajectory trajectory1 = TrajectoryGenerator.generateTrajectory(
-      new Pose2d(0, 0, new Rotation2d(0)), 
-      List.of(
-        new Translation2d(2, 0),
-        new Translation2d(1, -2),
-        new Translation2d(1, 2),
-        new Translation2d(0, -2),
-        new Translation2d(0, 0)
-      ),
-      new Pose2d(0, 0, new Rotation2d(1080)), 
+      new Pose2d(0, 0, Rotation2d.fromDegrees(180)), 
       Constants.kTrajectoryConfig);
 
     return trajectory1;

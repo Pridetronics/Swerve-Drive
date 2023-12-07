@@ -43,8 +43,9 @@ public class RobotContainer {
   public RobotContainer() {
 
     autoCommandChooser.setDefaultOption("Do Nothing", null);
-    autoCommandChooser.addOption("test auto", SwerveAutoPaths.TestAutoPath());
-    autoCommandChooser.addOption("weird path", SwerveAutoPaths.WeirdPath());
+    // autoCommandChooser.addOption("test auto", SwerveAutoPaths.TestAutoPath());
+    // autoCommandChooser.addOption("weird path", SwerveAutoPaths.WeirdPath());
+    autoCommandChooser.addOption("Forward Right", SwerveAutoPaths.ForwardRight());
 
     SmartDashboard.putData("Autonomous Mode", autoCommandChooser);
 
@@ -86,7 +87,6 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     Trajectory chosenTrajectory = autoCommandChooser.getSelected();
-
     if (chosenTrajectory == null) return null;
 
     PIDController xController = new PIDController(AutoConstants.kPXController, 0, 0);
