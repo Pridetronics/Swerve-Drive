@@ -4,18 +4,19 @@
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.sensors.AbsoluteSensorRange;
-import com.ctre.phoenix.sensors.CANCoder;
-import com.ctre.phoenix.sensors.CANCoderConfiguration;
+
+import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
+import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkMaxPIDController;
-import com.revrobotics.SparkMaxRelativeEncoder;
-import com.revrobotics.CANSparkMax.ControlType;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import com.revrobotics.SparkMaxRelativeEncoder.Type;
+import com.revrobotics.SparkPIDController;
+import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.SparkRelativeEncoder;
+import com.revrobotics.CANSparkBase.ControlType;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -26,6 +27,7 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.SwerveModuleConstants;
 import frc.robot.Constants.WheelConstants;
 
+
 public class SwerveModule extends SubsystemBase {
   /** Creates a new ExampleSubsystem. */
   private final CANSparkMax driveMotor;
@@ -34,9 +36,9 @@ public class SwerveModule extends SubsystemBase {
   private final RelativeEncoder driveEncoder;
   private final RelativeEncoder turningEncoder;
 
-  private final SparkMaxPIDController turningPidController;
+  private final SparkPIDController turningPidController;
 
-  private final CANCoder absoluteEncoder;
+  private final CANcoder absoluteEncoder;
   private final boolean absoluteEncoderReversed;
   private final double absoluteEncoderOffsetRad;
 
@@ -51,11 +53,11 @@ public class SwerveModule extends SubsystemBase {
 
     this.absoluteEncoderOffsetRad = swerveModuleConstants.kAbsoluteEncoderOffsetRadians;
     this.absoluteEncoderReversed = swerveModuleConstants.kAbsoluteEncoderReversed;
-    absoluteEncoder = new CANCoder(swerveModuleConstants.kTurningEncoderID);
+    absoluteEncoder = new CANcoder(swerveModuleConstants.kTurningEncoderID);
     configAbsoluteEncoder();
 
-    driveEncoder = driveMotor.getEncoder(SparkMaxRelativeEncoder.Type.kHallSensor, 42);
-    turningEncoder = turningMotor.getEncoder(SparkMaxRelativeEncoder.Type.kHallSensor, 42);
+    driveEncoder = driveMotor.getEncoder(SparkRelativeEncoder.Type.kHallSensor, 42);
+    turningEncoder = turningMotor.getEncoder(SparkRelativeEncoder.Type.kHallSensor, 42);
 
     turningPidController = turningMotor.getPIDController();
     turningPidController.setP(WheelConstants.kPTurning);
@@ -75,13 +77,11 @@ public class SwerveModule extends SubsystemBase {
   }
 
   private void configAbsoluteEncoder() {
-    CANCoderConfiguration absoluteEncoderConfig = new CANCoderConfiguration();
-    
-    absoluteEncoder.configFactoryDefault();
+    CANcoderConfiguration absoluteEncoderConfig = new CANcoderConfiguration();
 
-    absoluteEncoderConfig.sensorDirection = true;
-    absoluteEncoderConfig.absoluteSensorRange = AbsoluteSensorRange.Unsigned_0_to_360;
-    absoluteEncoder.configAllSettings(absoluteEncoderConfig);
+    absoluteEncoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
+    absoluteEncoderConfig.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Unsigned_0To1;
+    absoluteEncoder.getConfigurator().apply(absoluteEncoderConfig);
 
   }
 
@@ -106,7 +106,9 @@ public class SwerveModule extends SubsystemBase {
   }
 
   public double getAbsoluteEncoderRad() {
-    double absoluteAngle = absoluteEncoder.getAbsolutePosition();
+    StatusSignal<Double> absoluteAngleSignal = absoluteEncoder.getAbsolutePosition();
+
+    double absoluteAngle = absoluteAngleSignal.getValue();
 
     absoluteAngle = absoluteEncoderReversed ? 360-absoluteAngle : absoluteAngle;
 

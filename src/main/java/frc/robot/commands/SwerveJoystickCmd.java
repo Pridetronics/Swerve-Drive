@@ -6,20 +6,17 @@ package frc.robot.commands;
 
 import java.util.function.Supplier;
 
-import com.revrobotics.AbsoluteEncoder;
-
 import edu.wpi.first.math.filter.SlewRateLimiter;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.IOConstants;
 import frc.robot.Constants.WheelConstants;
 import frc.robot.subsystems.SwerveSubsystem;
 
-public class SwerveJoystickCmd extends CommandBase {
+public class SwerveJoystickCmd extends Command {
 
 private final SwerveSubsystem swerveSubsystem;
 private final Supplier<Double> xSpdFunction, ySpdFunction, turningSpdFunction;
