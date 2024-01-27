@@ -81,10 +81,10 @@ private final Timer deltaTime = new Timer();
 
     }
 
-    // chassisSpeeds = ChassisSpeeds.discretize(chassisSpeeds, deltaTime.get());
+    chassisSpeeds = ChassisSpeeds.discretize(chassisSpeeds, deltaTime.get());
 
-    // SmartDashboard.putNumber("Delta Time", deltaTime.get());
-    //SmartDashboard.putString("Turning Axis proccessed", chassisSpeeds.toString());
+    SmartDashboard.putNumber("Delta Time", deltaTime.get());
+    SmartDashboard.putString("Turning Axis proccessed", chassisSpeeds.toString());
     deltaTime.reset();
     SwerveModuleState[] moduleStates = WheelConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);
 
