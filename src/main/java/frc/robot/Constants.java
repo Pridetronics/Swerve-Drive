@@ -77,19 +77,19 @@ public final class Constants {
     public static final int kFrontLeftDriveMotorCANID = 2;
     public static final int kFrontLeftTurningMotorCANID = 1;
     public static final boolean kFrontLeftTurningEncoderReversed = true;
-    public static final boolean kFrontLeftDriveEncoderReversed = true;
+    public static final boolean kFrontLeftDriveEncoderReversed = false;
     public static final int kFrontLeftDriveAbsoluteEncoderCANID = 9;
     public static final boolean kFrontLeftDriveAbsoluteEncoderReversed = false;
-    public static final int kFrontLeftDriveAbsoluteEncoderOffsetDeg = 144;
+    public static final int kFrontLeftDriveAbsoluteEncoderOffsetDeg = 0;
 
 
     public static final int kFrontRightDriveMotorCANID = 4;
     public static final int kFrontRightTurningMotorCANID = 3;
     public static final boolean kFrontRightTurningEncoderReversed = true;
-    public static final boolean kFrontRightDriveEncoderReversed = false;
+    public static final boolean kFrontRightDriveEncoderReversed = true;
     public static final int kFrontRightDriveAbsoluteEncoderCANID = 10;
     public static final boolean kFrontRightDriveAbsoluteEncoderReversed = false;
-    public static final int kFrontRightDriveAbsoluteEncoderOffsetDeg = 168;
+    public static final int kFrontRightDriveAbsoluteEncoderOffsetDeg = 0;
 
 
     public static final int kBackRightDriveMotorCANID = 6;
@@ -98,7 +98,7 @@ public final class Constants {
     public static final boolean kBackRightDriveEncoderReversed = false;
     public static final int kBackRightDriveAbsoluteEncoderCANID = 11;
     public static final boolean kBackRightDriveAbsoluteEncoderReversed = false;
-    public static final int kBackRightDriveAbsoluteEncoderOffsetDeg = 216;
+    public static final int kBackRightDriveAbsoluteEncoderOffsetDeg = 0;
 
     public static final int kBackLeftDriveMotorCANID = 8;
     public static final int kBackLeftTurningMotorCANID = 7;
@@ -106,7 +106,7 @@ public final class Constants {
     public static final boolean kBackLeftDriveEncoderReversed = true;
     public static final int kBackLeftDriveAbsoluteEncoderCANID = 12;
     public static final boolean kBackLeftDriveAbsoluteEncoderReversed = false;
-    public static final int kBackLeftDriveAbsoluteEncoderOffsetDeg = -15;
+    public static final int kBackLeftDriveAbsoluteEncoderOffsetDeg = 0; 
   }
 
   public static class AutoConstants {
@@ -134,7 +134,7 @@ public final class Constants {
       public final int kDriveMotorCANID;
       public final int kTurningMotorCANID;
       public final int kTurningEncoderID;
-      public final double kAbsoluteEncoderOffsetRadians;
+      public final double kAbsoluteEncoderOffsetDegrees;
       public final boolean kAbsoluteEncoderReversed;
       public final boolean kDriveEncoderReversed;
       public final boolean kTurningEncoderReversed;
@@ -152,7 +152,7 @@ public final class Constants {
           kDriveMotorCANID = driveMotorCANID;
           kTurningMotorCANID = turningMotorCANID;
           kTurningEncoderID = CTRETurningEncoderID;
-          kAbsoluteEncoderOffsetRadians = absoluteEncoderOffsetDegrees * (Math.PI/180);
+          kAbsoluteEncoderOffsetDegrees = absoluteEncoderOffsetDegrees;// * (Math.PI/180);
           kAbsoluteEncoderReversed = absoluteEncoderReversed;
           kDriveEncoderReversed = driveEncoderReversed;
           kTurningEncoderReversed = turningEncoderReversed;

@@ -9,6 +9,7 @@ import java.util.function.Supplier;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.DriveConstants;
@@ -22,6 +23,7 @@ private final SwerveSubsystem swerveSubsystem;
 private final Supplier<Double> xSpdFunction, ySpdFunction, turningSpdFunction;
 private Supplier<Boolean> fieldOrientedFunction;
 private final SlewRateLimiter xLimiter, yLimiter, turningLimiter;
+private final Timer deltaTime = new Timer();
 
   /** Creates a new SwerveJoystickCmd. */
   public SwerveJoystickCmd(SwerveSubsystem swerveSubsystem, 
@@ -46,7 +48,9 @@ private final SlewRateLimiter xLimiter, yLimiter, turningLimiter;
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    deltaTime.start();
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
@@ -74,9 +78,14 @@ private final SlewRateLimiter xLimiter, yLimiter, turningLimiter;
     if (fieldOrientedFunction.get()) {
       //Relative to field
       chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds, swerveSubsystem.getRotation2d());
-      SmartDashboard.putString("Turning Axis proccessed", chassisSpeeds.toString());
+
     }
 
+    // chassisSpeeds = ChassisSpeeds.discretize(chassisSpeeds, deltaTime.get());
+
+    // SmartDashboard.putNumber("Delta Time", deltaTime.get());
+    //SmartDashboard.putString("Turning Axis proccessed", chassisSpeeds.toString());
+    deltaTime.reset();
     SwerveModuleState[] moduleStates = WheelConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);
 
     swerveSubsystem.setModuleStates(moduleStates);

@@ -16,6 +16,7 @@ import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.SparkRelativeEncoder;
 import com.revrobotics.CANSparkBase.ControlType;
+import com.revrobotics.CANSparkBase.IdleMode;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -40,21 +41,20 @@ public class SwerveModule extends SubsystemBase {
 
   private final CANcoder absoluteEncoder;
   private final boolean absoluteEncoderReversed;
-  private final double absoluteEncoderOffsetRad;
 
   public SwerveModule(SwerveModuleConstants swerveModuleConstants) {
 
     driveMotor = new CANSparkMax(swerveModuleConstants.kDriveMotorCANID, MotorType.kBrushless);
-    
+    driveMotor.setIdleMode(IdleMode.kBrake);
     turningMotor = new CANSparkMax(swerveModuleConstants.kTurningMotorCANID, MotorType.kBrushless);
+    driveMotor.setIdleMode(IdleMode.kBrake);
 
     driveMotor.setInverted(swerveModuleConstants.kDriveEncoderReversed);
     turningMotor.setInverted(swerveModuleConstants.kTurningEncoderReversed);
 
-    this.absoluteEncoderOffsetRad = swerveModuleConstants.kAbsoluteEncoderOffsetRadians;
     this.absoluteEncoderReversed = swerveModuleConstants.kAbsoluteEncoderReversed;
     absoluteEncoder = new CANcoder(swerveModuleConstants.kTurningEncoderID);
-    configAbsoluteEncoder();
+    configAbsoluteEncoder(swerveModuleConstants.kAbsoluteEncoderOffsetDegrees);
 
     driveEncoder = driveMotor.getEncoder(SparkRelativeEncoder.Type.kHallSensor, 42);
     turningEncoder = turningMotor.getEncoder(SparkRelativeEncoder.Type.kHallSensor, 42);
@@ -66,7 +66,6 @@ public class SwerveModule extends SubsystemBase {
     turningPidController.setPositionPIDWrappingEnabled(true);
     turningPidController.setPositionPIDWrappingMaxInput(Math.PI);
     turningPidController.setPositionPIDWrappingMinInput(-Math.PI);
-    SmartDashboard.putNumber("Ration" + absoluteEncoder.getDeviceID(), WheelConstants.kDriveMotorGearRatio);
     driveEncoder.setPositionConversionFactor(WheelConstants.kDistancePerWheelRotation*WheelConstants.kDriveMotorGearRatio);
     driveEncoder.setVelocityConversionFactor((WheelConstants.kDistancePerWheelRotation*WheelConstants.kDriveMotorGearRatio) / 60);
 
@@ -76,10 +75,11 @@ public class SwerveModule extends SubsystemBase {
     resetEncoders();
   }
 
-  private void configAbsoluteEncoder() {
+  private void configAbsoluteEncoder(double absoluteOffsetDegrees) {
     CANcoderConfiguration absoluteEncoderConfig = new CANcoderConfiguration();
 
     absoluteEncoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
+    absoluteEncoderConfig.MagnetSensor.MagnetOffset = -absoluteOffsetDegrees/360;
     absoluteEncoderConfig.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Unsigned_0To1;
     absoluteEncoder.getConfigurator().apply(absoluteEncoderConfig);
 
@@ -107,14 +107,11 @@ public class SwerveModule extends SubsystemBase {
 
   public double getAbsoluteEncoderRad() {
     StatusSignal<Double> absoluteAngleSignal = absoluteEncoder.getAbsolutePosition();
-
-    double absoluteAngle = absoluteAngleSignal.getValue();
-
+    double absoluteAngle = absoluteAngleSignal.getValue()*360;
+    SmartDashboard.putNumber("AbsoluteAngle [" + absoluteEncoder.getDeviceID() + "]", absoluteAngle);
     absoluteAngle = absoluteEncoderReversed ? 360-absoluteAngle : absoluteAngle;
 
     double angle = Units.degreesToRadians(absoluteAngle);
-
-    angle -= absoluteEncoderOffsetRad;
 
     return angle;
   }
