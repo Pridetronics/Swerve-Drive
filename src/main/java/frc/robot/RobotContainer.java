@@ -39,6 +39,7 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
 
+    //Create your auto paths here (By which the trajectories are made in SwerveAutoPaths)
     autoCommandChooser.setDefaultOption("Do Nothing", null);
     // autoCommandChooser.addOption("test auto", SwerveAutoPaths.TestAutoPath());
     // autoCommandChooser.addOption("weird path", SwerveAutoPaths.WeirdPath());
@@ -46,7 +47,8 @@ public class RobotContainer {
 
     SmartDashboard.putData("Autonomous Mode", autoCommandChooser);
 
-
+    //Command set to run periodicly to register joystick inputs
+    //It uses suppliers/mini methods to give up to date info easily
     swerveSubsystem.setDefaultCommand(
       new SwerveJoystickCmd(
         swerveSubsystem, 
@@ -72,6 +74,7 @@ public class RobotContainer {
    */
   private void configureBindings() {
 
+    //Activates an Instant Command to reset field direction when button is pressed down
     new JoystickButton(driverJoystick, IOConstants.kZeroHeadingBtnID)
     .onTrue(new ZeroRobotHeading(swerveSubsystem));
 
@@ -83,14 +86,16 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
+    //Get the trajectory selected in the drop down on the shuffleboard
     Trajectory chosenTrajectory = autoCommandChooser.getSelected();
     if (chosenTrajectory == null) return null;
-
+    //Controllers to keep the robot on the main path since it will not follow it too well without it
     PIDController xController = new PIDController(AutoConstants.kPXController, 0, 0);
     PIDController yController = new PIDController(AutoConstants.kPYController, 0, 0);
     ProfiledPIDController thetaController = new ProfiledPIDController(AutoConstants.kPThetaController, 0, 0, AutoConstants.kThetaControllerConstraints);
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
-
+    
+    //Creates a command that will run the robot along the path
     SwerveControllerCommand swerveAutoCommand = new SwerveControllerCommand(
     chosenTrajectory, 
     swerveSubsystem::getPose, 
@@ -101,6 +106,7 @@ public class RobotContainer {
     swerveSubsystem::setModuleStates,
     swerveSubsystem);
 
+    //A series of commands that will reset the 
     return new SequentialCommandGroup(
       new InstantCommand(() -> swerveSubsystem.resetOdometry(chosenTrajectory.getInitialPose())),
       swerveAutoCommand,
