@@ -161,14 +161,20 @@ public final class Constants {
   public static class AutoConstants {
     //Max speed during autonomous
     public static final double kMaxSpeedMetersPerSecond = 1.5;
+    //Acceleration during autonomous (note its in meters, not units)
     public static final double kMaxAccelerationMetersPerSecond = 3;
 
+    //Max turning speed during autonomous
     public static final double kMaxTurningSpeedRadiansPerSecond = 30 * (Math.PI / 180);
+    //Acceleration during autonomous (note its in radians, not units)
     public static final double kMaxTurningAccelerationRadiansPerSecond = 180 * (Math.PI / 180);
 
+    //Power Controllers for the robot to keep it on course
     public static final double kPXController = 1.5;
     public static final double kPYController = 1.5;
     public static final double kPThetaController = 3;
+
+    //This is for the Profiled PID Controller that controls the robot direction
     public static final TrapezoidProfile.Constraints kThetaControllerConstraints = //
     new TrapezoidProfile.Constraints(
       kMaxTurningSpeedRadiansPerSecond,
