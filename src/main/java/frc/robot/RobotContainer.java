@@ -106,7 +106,7 @@ public class RobotContainer {
     swerveSubsystem::setModuleStates,
     swerveSubsystem);
 
-    //A series of commands that will reset the 
+    //A series of commands that will reset the odometer (aka the position predictor) so the forward direction of the trajectory is the forward direction of the robot, run the command, and stop all the wheels; in that order
     return new SequentialCommandGroup(
       new InstantCommand(() -> swerveSubsystem.resetOdometry(chosenTrajectory.getInitialPose())),
       swerveAutoCommand,
