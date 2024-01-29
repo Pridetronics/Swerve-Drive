@@ -43,22 +43,26 @@ public class SwerveModule extends SubsystemBase {
   private final boolean absoluteEncoderReversed;
 
   public SwerveModule(SwerveModuleConstants swerveModuleConstants) {
-
+    //Sets motor controllers
     driveMotor = new CANSparkMax(swerveModuleConstants.kDriveMotorCANID, MotorType.kBrushless);
     driveMotor.setIdleMode(IdleMode.kBrake);
     turningMotor = new CANSparkMax(swerveModuleConstants.kTurningMotorCANID, MotorType.kBrushless);
     driveMotor.setIdleMode(IdleMode.kBrake);
 
+    //Sets motor forward directions
     driveMotor.setInverted(swerveModuleConstants.kDriveEncoderReversed);
     turningMotor.setInverted(swerveModuleConstants.kTurningEncoderReversed);
 
+    //Sets absolute encoder
     this.absoluteEncoderReversed = swerveModuleConstants.kAbsoluteEncoderReversed;
     absoluteEncoder = new CANcoder(swerveModuleConstants.kTurningEncoderID);
     configAbsoluteEncoder(swerveModuleConstants.kAbsoluteEncoderOffsetDegrees);
 
+    //Sets relative encoders from the NEO Motors
     driveEncoder = driveMotor.getEncoder(SparkRelativeEncoder.Type.kHallSensor, 42);
     turningEncoder = turningMotor.getEncoder(SparkRelativeEncoder.Type.kHallSensor, 42);
 
+    //Sets the turning PID Controller
     turningPidController = turningMotor.getPIDController();
     turningPidController.setP(WheelConstants.kPTurning);
     turningPidController.setI(0);
@@ -66,15 +70,19 @@ public class SwerveModule extends SubsystemBase {
     turningPidController.setPositionPIDWrappingEnabled(true);
     turningPidController.setPositionPIDWrappingMaxInput(Math.PI);
     turningPidController.setPositionPIDWrappingMinInput(-Math.PI);
+
+    //Conversion factors to convert from motor rotations to distacne in meters
     driveEncoder.setPositionConversionFactor(WheelConstants.kDistancePerWheelRotation*WheelConstants.kDriveMotorGearRatio);
     driveEncoder.setVelocityConversionFactor((WheelConstants.kDistancePerWheelRotation*WheelConstants.kDriveMotorGearRatio) / 60);
-
+    
+    //Conversion factors to convert from motor rotations to rotations in radians
     turningEncoder.setPositionConversionFactor(WheelConstants.k360DegreesToRadians*WheelConstants.kTurningMotorGearRatio);
     turningEncoder.setVelocityConversionFactor((WheelConstants.k360DegreesToRadians*WheelConstants.kTurningMotorGearRatio) / 60);
 
     resetEncoders();
   }
 
+  //Config for CANCoder because CTRE likes doing this i guess
   private void configAbsoluteEncoder(double absoluteOffsetDegrees) {
     CANcoderConfiguration absoluteEncoderConfig = new CANcoderConfiguration();
 
@@ -85,18 +93,20 @@ public class SwerveModule extends SubsystemBase {
 
   }
 
+  //This for the odometer specifically
   public SwerveModulePosition getSwervePosition() {
     return new SwerveModulePosition( getDrivePosition(), new Rotation2d( getTurningPosition() ));
   }
-
+  //Not really needed but can be useful, probably better to use getDriveVelocity()
+  //Returned in meters
   public double getDrivePosition() {
     return driveEncoder.getPosition();
   }
-
+  //returns wheel direction in radians
   public double getTurningPosition() {
     return turningEncoder.getPosition();
   }
-
+  //returns wheel velocity in meters per second
   public double getDriveVelocity() {
     return driveEncoder.getVelocity();
   }
