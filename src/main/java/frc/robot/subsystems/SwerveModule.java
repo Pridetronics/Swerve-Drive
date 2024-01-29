@@ -73,10 +73,12 @@ public class SwerveModule extends SubsystemBase {
 
     //Conversion factors to convert from motor rotations to distacne in meters
     driveEncoder.setPositionConversionFactor(WheelConstants.kDistancePerWheelRotation*WheelConstants.kDriveMotorGearRatio);
+    //converts to meters per second
     driveEncoder.setVelocityConversionFactor((WheelConstants.kDistancePerWheelRotation*WheelConstants.kDriveMotorGearRatio) / 60);
     
     //Conversion factors to convert from motor rotations to rotations in radians
     turningEncoder.setPositionConversionFactor(WheelConstants.k360DegreesToRadians*WheelConstants.kTurningMotorGearRatio);
+    //converts to radians per second
     turningEncoder.setVelocityConversionFactor((WheelConstants.k360DegreesToRadians*WheelConstants.kTurningMotorGearRatio) / 60);
 
     resetEncoders();
@@ -97,8 +99,8 @@ public class SwerveModule extends SubsystemBase {
   public SwerveModulePosition getSwervePosition() {
     return new SwerveModulePosition( getDrivePosition(), new Rotation2d( getTurningPosition() ));
   }
-  //Not really needed but can be useful, probably better to use getDriveVelocity()
-  //Returned in meters
+
+  //Returns wheel position in meters
   public double getDrivePosition() {
     return driveEncoder.getPosition();
   }
@@ -110,12 +112,13 @@ public class SwerveModule extends SubsystemBase {
   public double getDriveVelocity() {
     return driveEncoder.getVelocity();
   }
-
+  //returns wheel direction velocity in radians per second
   public double getTurningVelocity() {
     return turningEncoder.getVelocity();
   }
-
+  //Gets and returns the position on the absolute encoder, used to center the wheel with the robot
   public double getAbsoluteEncoderRad() {
+    //Uses Status signals since CTRE thinks they are cool
     StatusSignal<Double> absoluteAngleSignal = absoluteEncoder.getAbsolutePosition();
     double absoluteAngle = absoluteAngleSignal.getValue()*360;
     SmartDashboard.putNumber("AbsoluteAngle [" + absoluteEncoder.getDeviceID() + "]", absoluteAngle);
@@ -126,33 +129,40 @@ public class SwerveModule extends SubsystemBase {
     return angle;
   }
 
+  //Resets the encoders, sets drive to zero and sets the turning to its current position relative to the robot's forward direction
   public void resetEncoders() {
     driveEncoder.setPosition(0);
     turningEncoder.setPosition(getAbsoluteEncoderRad());
   }
 
+  //Returns the state of the module with velocity and direction
   public SwerveModuleState getState() {
     return new SwerveModuleState( getDriveVelocity(), new Rotation2d( getTurningPosition() ));
   }
 
+  //Sets the module to a drive velocity and directional position
   public void setDesiredState(SwerveModuleState state) {    
     SmartDashboard.putString("Module [" + absoluteEncoder.getDeviceID() + "] state", state.toString());
     if (Math.abs(state.speedMetersPerSecond) < 0.01) {
       stop();
       return;
     }
-
+    //Prevents the wheel from taking more than a 90 degree turn
     state = SwerveModuleState.optimize(state, getState().angle);
+    //Sets the wheel speed as a percent of the physical max speed, might change later with a velocity PID controller
     driveMotor.set(state.speedMetersPerSecond / DriveConstants.kPhysicalMaxSpeedMetersPerSecond);
     //driveMotor.set(0);
 
+    //Sets the target angle for the turning motor
     turningPidController.setReference(state.angle.getRadians(), ControlType.kPosition);
     //turningMotor.set(turningPidController.calculate(turningEncoder.getPosition(), state.angle.getRadians()));
   }
 
+  //Stops the motor from moving and turning
   public void stop() {
     driveMotor.set(0);
-    turningPidController.setReference(turningEncoder.getPosition(), ControlType.kPosition);
+    //Sets the turning motor to stop where its currently at
+    turningPidController.setReference(getTurningPosition(), ControlType.kPosition);
     //turningMotor.set(0);
   }
 }
