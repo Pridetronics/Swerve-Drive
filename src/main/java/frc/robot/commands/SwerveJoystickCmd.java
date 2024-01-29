@@ -49,6 +49,7 @@ private final Timer deltaTime = new Timer();
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    //Used for discret time updating
     deltaTime.start();
   }
 
@@ -56,6 +57,7 @@ private final Timer deltaTime = new Timer();
   @Override
   public void execute() {
 
+    //Uses the suppliers to get the current joystick positions
     double xSpeed = xSpdFunction.get();
     double ySpeed = ySpdFunction.get();
     double turningSpeed = turningSpdFunction.get();
@@ -63,37 +65,40 @@ private final Timer deltaTime = new Timer();
     SmartDashboard.putNumber("ySpeed", ySpeed);
     SmartDashboard.putNumber("turnSpeed", turningSpeed);
 
-
+    //Makes sure that the joysticks are not giving small values when not being touched
     xSpeed = Math.abs(xSpeed) > IOConstants.kDeadband ? xSpeed : 0.0;
     ySpeed = Math.abs(ySpeed) > IOConstants.kDeadband ? ySpeed : 0.0;
     turningSpeed = Math.abs(turningSpeed) > IOConstants.kDeadband ? turningSpeed : 0.0;
 
+    //Makes the joystick inputs change over time so the robot doesnt speed up too fast
     xSpeed = xLimiter.calculate(xSpeed) * DriveConstants.kTeleMaxDriveSpeedMetersPerSecond;
     ySpeed = yLimiter.calculate(ySpeed) * DriveConstants.kTeleMaxDriveSpeedMetersPerSecond;
     turningSpeed = turningLimiter.calculate(turningSpeed) * DriveConstants.kTeleMaxTurningSpeedRadiansPerSecond;
 
     SmartDashboard.putBoolean("Field Oriented Drive", fieldOrientedFunction.get());
 
+    //Used for swerve kinematics
     ChassisSpeeds chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, turningSpeed);
     if (fieldOrientedFunction.get()) {
       //Relative to field
       chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds, swerveSubsystem.getRotation2d());
 
     }
-
+    //Makes the chassis speeds use the change in time instead of blind guesses to prevent position skewing
     chassisSpeeds = ChassisSpeeds.discretize(chassisSpeeds, deltaTime.get());
-
-    SmartDashboard.putNumber("Delta Time", deltaTime.get());
-    SmartDashboard.putString("Turning Axis proccessed", chassisSpeeds.toString());
+    //Resets the time to 0 to find the next deltaTime
     deltaTime.reset();
+    //Solves for the wheel velocities and directions based on the joystick inputs
     SwerveModuleState[] moduleStates = WheelConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);
 
+    //Sets the state of each module
     swerveSubsystem.setModuleStates(moduleStates);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    //Stops robot from moving when teleOp mode ends
     swerveSubsystem.stopModules();
   }
 
