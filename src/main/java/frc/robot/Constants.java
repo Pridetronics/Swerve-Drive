@@ -94,8 +94,8 @@ public final class Constants {
       -A value of 0.5 means the 0 to max time is 2 seconds
     You get the idea
    */
-    public static final double kTeleMaxDriveAccelerationUnitsPerSecond = 3;
-    public static final double kTeleMaxTurningAccelerationUnitsPerSecond = 3;
+    public static final double kTeleMaxDriveAccelerationUnitsPerSecond = 6;
+    public static final double kTeleMaxTurningAccelerationUnitsPerSecond = 6;
 
     //Max speed of the robot itself
     public static final double kTeleMaxDriveSpeedMetersPerSecond = 2.25;
