@@ -7,7 +7,11 @@ package frc.robot;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -36,6 +40,14 @@ public class RobotContainer {
   private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
   private final SendableChooser<Trajectory> autoCommandChooser = new SendableChooser<>();
   private final Joystick driverJoystick = new Joystick(IOConstants.kDriveJoystickID);
+
+  //Create a shuffleboard tab for the drivers to see all teleop info
+  private static final ShuffleboardTab teleOpTab = Shuffleboard.getTab("Teleoperation");
+
+  private final GenericEntry forwardDirectionEntry = teleOpTab.add("Reverse Field Forward", false)
+  .withWidget(BuiltInWidgets.kToggleSwitch)
+  .getEntry();
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
 
@@ -49,13 +61,12 @@ public class RobotContainer {
 
     //Command set to run periodicly to register joystick inputs
     //It uses suppliers/mini methods to give up to date info easily
-    swerveSubsystem.setDefaultCommand(
-      new SwerveJoystickCmd(
+    swerveSubsystem.setDefaultCommand(new SwerveJoystickCmd(
         swerveSubsystem, 
-        () -> -driverJoystick.getRawAxis(IOConstants.kDriveJoystickXAxis), 
-        () -> driverJoystick.getRawAxis(IOConstants.kDriveJoystickYAxis), 
-        () -> driverJoystick.getRawAxis(IOConstants.kDriveJoystickTurningAxis),
-        () -> !driverJoystick.getRawButton(IOConstants.kDriveFieldOrientedDriveBtnID)
+        () -> -driverJoystick.getRawAxis(IOConstants.kDriveJoystickXAxis) * (forwardDirectionEntry.getBoolean(false) ? -1 : 1), 
+        () -> -driverJoystick.getRawAxis(IOConstants.kDriveJoystickYAxis) * (forwardDirectionEntry.getBoolean(false) ? -1 : 1), 
+        () -> -driverJoystick.getRawAxis(IOConstants.kDriveJoystickTurningAxis),
+        () -> true
       )
     );
 

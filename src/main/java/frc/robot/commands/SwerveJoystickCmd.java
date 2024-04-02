@@ -4,12 +4,20 @@
 
 package frc.robot.commands;
 
+import java.util.Map;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.DriveConstants;
@@ -24,6 +32,12 @@ private final Supplier<Double> xSpdFunction, ySpdFunction, turningSpdFunction;
 private Supplier<Boolean> fieldOrientedFunction;
 private final SlewRateLimiter xLimiter, yLimiter, turningLimiter;
 private final Timer deltaTime = new Timer();
+
+  private final ShuffleboardTab teleOpTab = Shuffleboard.getTab("Teleoperation");
+  private GenericEntry robotSpeedPercent = teleOpTab.addPersistent("Robot Speed Percent", DriveConstants.kTeleMaxDriveSpeedMetersPerSecond/DriveConstants.kPhysicalMaxSpeedMetersPerSecond)
+    .withWidget(BuiltInWidgets.kNumberSlider)
+    .withProperties(Map.of("min", 0, "max", 1))
+    .getEntry();
 
   /** Creates a new SwerveJoystickCmd. */
   public SwerveJoystickCmd(SwerveSubsystem swerveSubsystem, 
@@ -61,9 +75,17 @@ private final Timer deltaTime = new Timer();
     double xSpeed = xSpdFunction.get();
     double ySpeed = ySpdFunction.get();
     double turningSpeed = turningSpdFunction.get();
-    SmartDashboard.putNumber("xSpeed", xSpeed);
-    SmartDashboard.putNumber("ySpeed", ySpeed);
-    SmartDashboard.putNumber("turnSpeed", turningSpeed);
+
+    int teamBasedXAxisMult = 1;
+    int teamBasedYAxisMult = 1;
+    Optional<Alliance> currentTeam = DriverStation.getAlliance();
+    if (currentTeam.isPresent() && currentTeam.get() == Alliance.Red) {
+      teamBasedXAxisMult = -1;
+      teamBasedYAxisMult = -1;
+    }
+
+    xSpeed *= teamBasedXAxisMult;
+    ySpeed *= teamBasedYAxisMult;
 
     //Makes sure that the joysticks are not giving small values when not being touched
     xSpeed = Math.abs(xSpeed) > IOConstants.kDeadband ? xSpeed : 0.0;
@@ -71,8 +93,8 @@ private final Timer deltaTime = new Timer();
     turningSpeed = Math.abs(turningSpeed) > IOConstants.kDeadband ? turningSpeed : 0.0;
 
     //Makes the joystick inputs change over time so the robot doesnt speed up too fast
-    xSpeed = xLimiter.calculate(xSpeed) * DriveConstants.kTeleMaxDriveSpeedMetersPerSecond;
-    ySpeed = yLimiter.calculate(ySpeed) * DriveConstants.kTeleMaxDriveSpeedMetersPerSecond;
+    xSpeed = xLimiter.calculate(xSpeed) * robotSpeedPercent.getDouble(1)*DriveConstants.kTeleMaxDriveSpeedMetersPerSecond;
+    ySpeed = yLimiter.calculate(ySpeed) * robotSpeedPercent.getDouble(1)*DriveConstants.kTeleMaxDriveSpeedMetersPerSecond;
     turningSpeed = turningLimiter.calculate(turningSpeed) * DriveConstants.kTeleMaxTurningSpeedRadiansPerSecond;
 
     SmartDashboard.putBoolean("Field Oriented Drive", fieldOrientedFunction.get());

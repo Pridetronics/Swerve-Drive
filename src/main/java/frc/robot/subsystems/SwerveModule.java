@@ -22,14 +22,19 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.SwerveModuleConstants;
 import frc.robot.Constants.WheelConstants;
+import frc.robot.utils.ShuffleboardRateLimiter;
 
 
-public class SwerveModule extends SubsystemBase {
+public class SwerveModule extends SubsystemBase implements SwerveModuleInterface {
   /** Creates a new ExampleSubsystem. */
   private final CANSparkMax driveMotor;
   private final CANSparkMax turningMotor;
@@ -41,6 +46,10 @@ public class SwerveModule extends SubsystemBase {
 
   private final CANcoder absoluteEncoder;
   private final boolean absoluteEncoderReversed;
+
+  private final ShuffleboardTab swerveTab = Shuffleboard.getTab("Swerve Drive");
+  private final GenericEntry moduleStateEntry;
+  private final GenericEntry modulePositionEntry;
 
   public SwerveModule(SwerveModuleConstants swerveModuleConstants) {
     //Sets motor controllers
@@ -82,6 +91,10 @@ public class SwerveModule extends SubsystemBase {
     turningEncoder.setVelocityConversionFactor((WheelConstants.k360DegreesToRadians*WheelConstants.kTurningMotorGearRatio) / 60);
 
     resetEncoders();
+
+    moduleStateEntry = swerveTab.add("Module [" + absoluteEncoder.getDeviceID() + "] State", "N/A").getEntry();
+    modulePositionEntry = swerveTab.add("Module [" + absoluteEncoder.getDeviceID() + "] Position", "N/A").getEntry();
+
   }
 
   //Config for CANCoder because CTRE likes doing this i guess
@@ -117,11 +130,11 @@ public class SwerveModule extends SubsystemBase {
     return turningEncoder.getVelocity();
   }
   //Gets and returns the position on the absolute encoder, used to center the wheel with the robot
-  public double getAbsoluteEncoderRad() {
+  private double getAbsoluteEncoderRad() {
     //Uses Status signals since CTRE thinks they are cool
     StatusSignal<Double> absoluteAngleSignal = absoluteEncoder.getAbsolutePosition();
     double absoluteAngle = absoluteAngleSignal.getValue()*360;
-    SmartDashboard.putNumber("AbsoluteAngle [" + absoluteEncoder.getDeviceID() + "]", absoluteAngle);
+    swerveTab.add("Absolute Angle [" + absoluteEncoder.getDeviceID() + "]", absoluteAngle);
     absoluteAngle = absoluteEncoderReversed ? 360-absoluteAngle : absoluteAngle;
 
     double angle = Units.degreesToRadians(absoluteAngle);
@@ -142,7 +155,9 @@ public class SwerveModule extends SubsystemBase {
 
   //Sets the module to a drive velocity and directional position
   public void setDesiredState(SwerveModuleState state) {    
-    SmartDashboard.putString("Module [" + absoluteEncoder.getDeviceID() + "] state", state.toString());
+    ShuffleboardRateLimiter.queueDataForShuffleboard(moduleStateEntry, getState().toString());
+    ShuffleboardRateLimiter.queueDataForShuffleboard(modulePositionEntry, getSwervePosition().toString());
+
     if (Math.abs(state.speedMetersPerSecond) < 0.01) {
       stop();
       return;
